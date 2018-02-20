@@ -81,6 +81,10 @@ check_cached_version() {
       return ${RETCODE_SUCCESS}
     fi
   fi
+  if [[ -d "${ROOT_MOUNT_DIR}${NVIDIA_INSTALL_DIR_HOST}" ]]; then
+    info "Removing existing driver installation from ${ROOT_MOUNT_DIR}${NVIDIA_INSTALL_DIR_HOST}"
+    rm -rf "${ROOT_MOUNT_DIR}${NVIDIA_INSTALL_DIR_HOST}"
+  fi
   return ${RETCODE_ERROR}
 }
 
