@@ -84,10 +84,10 @@ check_cached_version() {
   if [[ -d "${ROOT_MOUNT_DIR}${NVIDIA_INSTALL_DIR_HOST}" ]]; then
     info "Unloading existing kernel module drivers"
     if lsmod | grep -q -w 'nvidia_drm'; then
-      rmmod nvidia-drm
+      rmmod nvidia_drm
     fi
     if lsmod | grep -q -w 'nvidia_uvm'; then
-      rmmod nvidia-uvm
+      rmmod nvidia_uvm
     fi
     if lsmod | grep -q -w 'nvidia'; then
       rmmod nvidia
