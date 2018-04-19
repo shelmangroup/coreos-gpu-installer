@@ -215,6 +215,13 @@ download_nvidia_installer() {
 
 run_nvidia_installer() {
   info "Running Nvidia installer"
+  # Load deps
+  if ! lsmod | grep -q -w 'ipmi_msghandler'; then
+    insmod `find /root/lib/modules -iname ipmi_msghandler.ko`
+  fi
+  if ! lsmod | grep -q -w 'ipmi_devintf'; then
+    insmod `find /root/lib/modules -iname ipmi_devintf.ko`
+  fi
   pushd "${NVIDIA_INSTALL_DIR_CONTAINER}"
   sh "${NVIDIA_INSTALLER_RUNFILE}" \
     --kernel-source-path="${KERNEL_SRC_DIR}" \
