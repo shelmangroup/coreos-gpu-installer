@@ -63,6 +63,16 @@ load_etc_os_release() {
   info "Running on Container Linux version id ${VERSION_ID}"
 }
 
+unload_modules() {
+  info "Unloading existing kernel module drivers"
+  for module in nvidia_uvm nvidia_drm nvidia; do
+    if grep -q -w ${module} /proc/modules; then
+      rmmod ${module} || exit ${RETCODE_ERROR}
+      info "Successfully unloaded ${module}"
+    fi
+  done
+}
+
 check_cached_version() {
   info "Checking cached version"
   if [[ ! -f "${CACHE_FILE}" ]]; then
@@ -82,16 +92,7 @@ check_cached_version() {
     fi
   fi
   if [[ -d "${ROOT_MOUNT_DIR}${NVIDIA_INSTALL_DIR_HOST}" ]]; then
-    info "Unloading existing kernel module drivers"
-    if lsmod | grep -q -w 'nvidia_drm'; then
-      rmmod nvidia_drm
-    fi
-    if lsmod | grep -q -w 'nvidia_uvm'; then
-      rmmod nvidia_uvm
-    fi
-    if lsmod | grep -q -w 'nvidia'; then
-      rmmod nvidia
-    fi
+    unload_modules
     info "Removing existing driver installation from ${ROOT_MOUNT_DIR}${NVIDIA_INSTALL_DIR_HOST}"
     rm -rf "${ROOT_MOUNT_DIR}${NVIDIA_INSTALL_DIR_HOST}"
   fi
