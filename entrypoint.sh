@@ -238,13 +238,13 @@ run_nvidia_installer() {
 configure_cached_installation() {
   info "Configuring cached driver installation"
   update_container_ld_cache
-  if ! lsmod | grep -q -w 'nvidia'; then
+  if ! grep -q -w nvidia /proc/modules; then
     insmod "${NVIDIA_INSTALL_DIR_CONTAINER}/drivers/nvidia.ko"
   fi
-  if ! lsmod | grep -q -w 'nvidia_uvm'; then
+  if ! grep -q -w nvidia_uvm /proc/modules; then
     insmod "${NVIDIA_INSTALL_DIR_CONTAINER}/drivers/nvidia-uvm.ko"
   fi
-  if ! lsmod | grep -q -w 'nvidia_drm'; then
+  if ! grep -q -w nvidia_drm /proc/modules; then
     insmod "${NVIDIA_INSTALL_DIR_CONTAINER}/drivers/nvidia-drm.ko"
   fi
 }
