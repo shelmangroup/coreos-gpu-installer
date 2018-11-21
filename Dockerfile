@@ -13,7 +13,17 @@
 FROM ubuntu:17.10
 
 RUN apt-get update && \
-    apt-get install -y kmod gcc make curl xz-utils bc libelf-dev libssl-dev && \
+    apt-get install -y \
+        bc \
+        curl \
+        gcc \
+        kmod \
+        libelf-dev \
+        libssl-dev \
+        make \
+        perl-modules \
+        xz-utils \
+        && \
     rm -rf /var/lib/apt/lists/*
 
 COPY entrypoint.sh /entrypoint.sh
