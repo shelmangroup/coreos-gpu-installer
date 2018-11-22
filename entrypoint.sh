@@ -22,8 +22,8 @@ KERNEL_SRC_URL="https://cdn.kernel.org/pub/linux/kernel/v4.x"
 KERNEL_SRC_ARCHIVE="linux-$(uname -r | cut -d- -f1).tar.xz"
 KERNEL_SRC_DIR="${KERNEL_SRC_DIR:-/build/usr/src/linux}"
 ROOT_OS_RELEASE="${ROOT_OS_RELEASE:-/root/etc/os-release}"
-NVIDIA_DRIVER_VERSION="${NVIDIA_DRIVER_VERSION:-396.26}"
-NVIDIA_DRIVER_DOWNLOAD_URL_DEFAULT="https://us.download.nvidia.com/tesla/${NVIDIA_DRIVER_VERSION}/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run"
+NVIDIA_DRIVER_VERSION="${NVIDIA_DRIVER_VERSION:-410.48}"
+NVIDIA_DRIVER_DOWNLOAD_URL_DEFAULT="https://developer.nvidia.com/compute/cuda/10.0/Prod/local_installers/cuda_10.0.130_${NVIDIA_DRIVER_VERSION}_linux"
 NVIDIA_DRIVER_DOWNLOAD_URL="${NVIDIA_DRIVER_DOWNLOAD_URL:-$NVIDIA_DRIVER_DOWNLOAD_URL_DEFAULT}"
 NVIDIA_INSTALL_DIR_HOST="${NVIDIA_INSTALL_DIR_HOST:-/opt/nvidia}"
 NVIDIA_INSTALL_DIR_CONTAINER="${NVIDIA_INSTALL_DIR_CONTAINER:-/usr/local/nvidia}"
@@ -207,14 +207,14 @@ configure_nvidia_installation_dirs() {
 }
 
 download_nvidia_installer() {
-  info "Downloading Nvidia installer ... "
+  info "Downloading NVIDIA installer ... "
   pushd "${NVIDIA_INSTALL_DIR_CONTAINER}"
   curl -L -sS "${NVIDIA_DRIVER_DOWNLOAD_URL}" -o "${NVIDIA_INSTALLER_RUNFILE}"
   popd
 }
 
 run_nvidia_installer() {
-  info "Running Nvidia installer"
+  info "Running NVIDIA installer"
   # Load deps
   if ! grep -q -w ipmi_msghandler /proc/modules; then
     insmod `find /root/lib/modules -iname ipmi_msghandler.ko`
@@ -223,15 +223,14 @@ run_nvidia_installer() {
     insmod `find /root/lib/modules -iname ipmi_devintf.ko`
   fi
   pushd "${NVIDIA_INSTALL_DIR_CONTAINER}"
+  IGNORE_MISSING_MODULE_SYMVERS=1 \
   sh "${NVIDIA_INSTALLER_RUNFILE}" \
+    --driver \
     --kernel-source-path="${KERNEL_SRC_DIR}" \
-    --utility-prefix="${NVIDIA_INSTALL_DIR_CONTAINER}" \
-    --opengl-prefix="${NVIDIA_INSTALL_DIR_CONTAINER}" \
-    --x-prefix="${NVIDIA_INSTALL_DIR_CONTAINER}" \
-    --no-install-compat32-libs \
-    --log-file-name="${NVIDIA_INSTALL_DIR_CONTAINER}/nvidia-installer.log" \
-    --silent \
-    --accept-license
+    --no-drm \
+    --no-man-page \
+    --no-opengl-libs \
+    --silent
   popd
 }
 
@@ -250,7 +249,7 @@ configure_cached_installation() {
 }
 
 verify_nvidia_installation() {
-  info "Verifying Nvidia installation"
+  info "Verifying NVIDIA installation"
   export PATH="${NVIDIA_INSTALL_DIR_CONTAINER}/bin:${PATH}"
   nvidia-smi
   # Create unified memory device file.
