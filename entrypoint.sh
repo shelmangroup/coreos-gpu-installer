@@ -22,8 +22,8 @@ KERNEL_SRC_URL="https://cdn.kernel.org/pub/linux/kernel/v4.x"
 KERNEL_SRC_ARCHIVE="linux-$(uname -r | cut -d- -f1).tar.xz"
 KERNEL_SRC_DIR="${KERNEL_SRC_DIR:-/build/usr/src/linux}"
 ROOT_OS_RELEASE="${ROOT_OS_RELEASE:-/root/etc/os-release}"
-NVIDIA_DRIVER_VERSION="${NVIDIA_DRIVER_VERSION:-410.48}"
-NVIDIA_DRIVER_DOWNLOAD_URL_DEFAULT="https://developer.nvidia.com/compute/cuda/10.0/Prod/local_installers/cuda_10.0.130_${NVIDIA_DRIVER_VERSION}_linux"
+NVIDIA_DRIVER_VERSION="${NVIDIA_DRIVER_VERSION:-410.78}"
+NVIDIA_DRIVER_DOWNLOAD_URL_DEFAULT="http://us.download.nvidia.com/XFree86/Linux-x86_64/${NVIDIA_DRIVER_VERSION}/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run"
 NVIDIA_DRIVER_DOWNLOAD_URL="${NVIDIA_DRIVER_DOWNLOAD_URL:-$NVIDIA_DRIVER_DOWNLOAD_URL_DEFAULT}"
 NVIDIA_INSTALL_DIR_HOST="${NVIDIA_INSTALL_DIR_HOST:-/opt/nvidia}"
 NVIDIA_INSTALL_DIR_CONTAINER="${NVIDIA_INSTALL_DIR_CONTAINER:-/usr/local/nvidia}"
@@ -225,11 +225,9 @@ run_nvidia_installer() {
   pushd "${NVIDIA_INSTALL_DIR_CONTAINER}"
   IGNORE_MISSING_MODULE_SYMVERS=1 \
   sh "${NVIDIA_INSTALLER_RUNFILE}" \
-    --driver \
     --kernel-source-path="${KERNEL_SRC_DIR}" \
     --no-drm \
-    --no-man-page \
-    --no-opengl-libs \
+    --no-opengl-files \
     --silent
   popd
 }
