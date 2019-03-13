@@ -17,6 +17,7 @@ RUN apt-get update && \
         bc \
         bison \
         curl \
+        flex \
         gcc \
         kmod \
         libelf-dev \
